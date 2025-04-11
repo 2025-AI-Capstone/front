@@ -17,18 +17,18 @@ const EventLog = () => {
     };
 
     return (
-        <div className="bg-gray-900 rounded-lg p-3">
-            <h2 className="text-sm font-bold mb-2 border-b border-gray-700 pb-1">최근 이벤트</h2>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
-                {events.map(event => (
-                    <div key={event.id} className={`border-l-2 pl-2 ${getEventColor(event.type)}`}>
-                        <div>{event.message}</div>
-                        <div className="text-xs text-gray-400">{event.time}</div>
-                    </div>
-                ))}
+<div className="bg-gray-900 rounded-lg p-3">
+    <h2 className="text-sm font-bold mb-2 border-b border-gray-700 pb-1">최근 이벤트</h2>
+    <div className="space-y-2 max-h-32 overflow-y-auto">
+        {events.map(event => (
+            <div key={event.id} className={`border-l-2 pl-2 ${getEventColor(event.type)}`}>
+                <div>{event.message}</div>
+                <div className="text-xs text-gray-400">{event.time}</div>
             </div>
-        </div>
-    );
+        ))}
+    </div>
+</div>
+);
 };
 
 export default EventLog;
