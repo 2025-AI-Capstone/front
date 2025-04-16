@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/common/Header';
 import NodeStatus from './components/dashboard/NodeStatus';
 import EventLog from './components/dashboard/EventLog';
-import VideoStream from './components/video/VideoStream';
+import ImageStreamWithDetection from './components/video/ImageStreamWithDetection';
 import QuickActions from './components/dashboard/QuickActions';
 import StatsPanel from './components/dashboard/StatsPanel';
 import FallDetectionChart from './components/dashboard/FallDetectionChart';
@@ -32,7 +32,7 @@ function App() {
                 <div className="grid grid-cols-12 gap-4">
                     {/* Main Video Stream - 9 columns */}
                     <div className="col-span-9 bg-gray-900 rounded-lg overflow-hidden">
-                        <VideoStream />
+                        <ImageStreamWithDetection />
                     </div>
 
                     {/* Right Sidebar - 3 columns */}
