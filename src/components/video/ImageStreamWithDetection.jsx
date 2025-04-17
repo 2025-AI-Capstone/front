@@ -1,99 +1,95 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ROSLIB from 'roslib';
 
 const ImageStreamWithDetection = () => {
   const [imageData, setImageData] = useState(null);
   const [fps, setFps] = useState(0);
-  const [frameCount, setFrameCount] = useState(0);
-  const [startTime, setStartTime] = useState(Date.now());
   const [rosConnected, setRosConnected] = useState(false);
+  
+  // useRef로 값들을 관리하여 리렌더링을 방지
+  const frameCountRef = useRef(0);
+  const startTimeRef = useRef(Date.now());
+  const rosRef = useRef(null);
+  const topicRef = useRef(null);
 
   useEffect(() => {
-    // 웹소켓 연결 설정 (기존 코드)
-    const ws = new WebSocket("ws://localhost:9090");  // 💡 웹소켓 주소는 실제 환경에 맞게 조정
+    // 한 번만 실행되도록 설정
+    if (rosRef.current === null) {
+      // ROS 연결 설정
+      const ros = new ROSLIB.Ros({
+        url: 'ws://localhost:9090'
+      });
+      
+      rosRef.current = ros;
 
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-    };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      if (data.image) {
-        setImageData(data.image);
-
-        // FPS 측정
-        const elapsedTime = (Date.now() - startTime) / 1000;
-        setFrameCount((prev) => prev + 1);
-
-        if (elapsedTime >= 1) {
-          const newFps = Math.round(frameCount / elapsedTime);
-          setFps(newFps);
-          setFrameCount(0);
-          setStartTime(Date.now());
-        }
-      }
-    };
-
-    ws.onerror = (err) => {
-      console.error("WebSocket Error:", err);
-    };
-
-    ws.onclose = () => {
-      console.log("WebSocket disconnected");
-    };
-
-    // ROS 연결 설정
-    const ros = new ROSLIB.Ros({
-      url: 'ws://localhost:9090'  // rosbridge_server 주소
-    });
-
-    ros.on('connection', () => {
-      console.log('Connected to ROS bridge');
-      setRosConnected(true);
-    });
-
-    ros.on('error', (error) => {
-      console.error('ROS bridge error:', error);
-    });
-
-    ros.on('close', () => {
-      console.log('Connection to ROS bridge closed');
-      setRosConnected(false);
-    });
-
-    // camera/stream 토픽 구독
-    const streamTopic = new ROSLIB.Topic({
-      ros: ros,
-      name: '/camera/stream',
-      messageType: 'std_msgs/String'
-    });
-
-    streamTopic.subscribe((message) => {
-      // base64 인코딩된 이미지 데이터를 받아 상태 업데이트
-      if (message.data) {
-        setImageData(message.data);
+      ros.on('connection', () => {
+        console.log('✅ Connected to ROS bridge');
+        setRosConnected(true);
         
-        // FPS 측정
-        const elapsedTime = (Date.now() - startTime) / 1000;
-        setFrameCount((prev) => prev + 1);
+        // 연결이 성공한 후에만 토픽 구독
+        subscribeToTopic(ros);
+      });
 
-        if (elapsedTime >= 1) {
-          const newFps = Math.round(frameCount / elapsedTime);
-          setFps(newFps);
-          setFrameCount(0);
-          setStartTime(Date.now());
+      ros.on('error', (error) => {
+        console.error('❌ ROS bridge error:', error);
+      });
+
+      ros.on('close', () => {
+        console.log('⚠️ Connection to ROS bridge closed');
+        setRosConnected(false);
+        
+        // 연결이 끊어지면 3초 후 재연결 시도
+        setTimeout(() => {
+          if (rosRef.current) {
+            console.log('🔄 Attempting to reconnect...');
+            rosRef.current.connect();
+          }
+        }, 3000);
+      });
+    }
+
+    function subscribeToTopic(ros) {
+      // 이미 구독 중이면 새로 구독하지 않음
+      if (topicRef.current) return;
+      
+      const streamTopic = new ROSLIB.Topic({
+        ros: ros,
+        name: '/camera/stream'
+      });
+
+      streamTopic.subscribe((message) => {
+        if (message.data) {
+          setImageData(message.data);
+          
+          // FPS 측정 - useRef 사용
+          frameCountRef.current += 1;
+          const elapsedTime = (Date.now() - startTimeRef.current) / 1000;
+          
+          if (elapsedTime >= 1) {
+            const newFps = Math.round(frameCountRef.current / elapsedTime);
+            setFps(newFps);
+            frameCountRef.current = 0;
+            startTimeRef.current = Date.now();
+          }
         }
-      }
-    });
+      });
+      
+      topicRef.current = streamTopic;
+    }
 
+    // 컴포넌트 언마운트 시 정리
     return () => {
-      // 정리 함수
-      ws.close();
-      streamTopic.unsubscribe();
-      ros.close();
+      if (topicRef.current) {
+        topicRef.current.unsubscribe();
+        topicRef.current = null;
+      }
+      
+      if (rosRef.current) {
+        rosRef.current.close();
+        rosRef.current = null;
+      }
     };
-  }, [frameCount, startTime]);
+  }, []);
 
   return (
     <div style={{ position: 'relative', width: '640px', height: '480px' }}>
