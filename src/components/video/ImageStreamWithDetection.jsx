@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import ROSLIB from 'roslib';
 
 const ImageStreamWithDetection = () => {
   const [imageData, setImageData] = useState(null);
   const [fps, setFps] = useState(0);
   const [frameCount, setFrameCount] = useState(0);
   const [startTime, setStartTime] = useState(Date.now());
+  const [rosConnected, setRosConnected] = useState(false);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080");  // 💡 웹소켓 주소는 실제 환경에 맞게 조정
+    // 웹소켓 연결 설정 (기존 코드)
+    const ws = new WebSocket("ws://localhost:9090");  // 💡 웹소켓 주소는 실제 환경에 맞게 조정
 
     ws.onopen = () => {
-      console.log("✅ WebSocket connected");
+      console.log("WebSocket connected");
     };
 
     ws.onmessage = (event) => {
@@ -33,15 +36,62 @@ const ImageStreamWithDetection = () => {
     };
 
     ws.onerror = (err) => {
-      console.error("❌ WebSocket Error:", err);
+      console.error("WebSocket Error:", err);
     };
 
     ws.onclose = () => {
-      console.log("⚠️ WebSocket disconnected");
+      console.log("WebSocket disconnected");
     };
 
+    // ROS 연결 설정
+    const ros = new ROSLIB.Ros({
+      url: 'ws://localhost:9090'  // rosbridge_server 주소
+    });
+
+    ros.on('connection', () => {
+      console.log('Connected to ROS bridge');
+      setRosConnected(true);
+    });
+
+    ros.on('error', (error) => {
+      console.error('ROS bridge error:', error);
+    });
+
+    ros.on('close', () => {
+      console.log('Connection to ROS bridge closed');
+      setRosConnected(false);
+    });
+
+    // camera/stream 토픽 구독
+    const streamTopic = new ROSLIB.Topic({
+      ros: ros,
+      name: '/camera/stream',
+      messageType: 'std_msgs/String'
+    });
+
+    streamTopic.subscribe((message) => {
+      // base64 인코딩된 이미지 데이터를 받아 상태 업데이트
+      if (message.data) {
+        setImageData(message.data);
+        
+        // FPS 측정
+        const elapsedTime = (Date.now() - startTime) / 1000;
+        setFrameCount((prev) => prev + 1);
+
+        if (elapsedTime >= 1) {
+          const newFps = Math.round(frameCount / elapsedTime);
+          setFps(newFps);
+          setFrameCount(0);
+          setStartTime(Date.now());
+        }
+      }
+    });
+
     return () => {
-      ws.close(); // 컴포넌트 언마운트 시 연결 해제
+      // 정리 함수
+      ws.close();
+      streamTopic.unsubscribe();
+      ros.close();
     };
   }, [frameCount, startTime]);
 
@@ -64,7 +114,7 @@ const ImageStreamWithDetection = () => {
         borderRadius: '5px',
         fontSize: '18px'
       }}>
-        FPS: {fps}
+        FPS: {fps} {rosConnected ? '🟢' : '🔴'}
       </div>
     </div>
   );
