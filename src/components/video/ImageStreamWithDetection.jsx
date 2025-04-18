@@ -17,7 +17,8 @@ const ImageStreamWithDetection = () => {
     if (rosRef.current === null) {
       // ROS 연결 설정
       const ros = new ROSLIB.Ros({
-        url: 'ws://localhost:9090'
+        // url: 'ws://localhost:9090'
+        url: 'ws://192.168.63.143:9090'
       });
       
       rosRef.current = ros;
@@ -92,7 +93,7 @@ const ImageStreamWithDetection = () => {
   }, []);
 
   return (
-    <div style={{ position: 'relative', width: '640px', height: '480px' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       {imageData && (
         <img
           src={`data:image/jpeg;base64,${imageData}`}
