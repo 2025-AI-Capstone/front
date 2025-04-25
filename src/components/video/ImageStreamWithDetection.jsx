@@ -18,7 +18,7 @@ const ImageStreamWithDetection = () => {
   useEffect(() => {
     if (rosRef.current === null) {
       const ros = new ROSLIB.Ros({
-        url: 'ws://192.168.63.143:9090',
+        url: 'ws://localhost:9090',
       });
 
       rosRef.current = ros;
