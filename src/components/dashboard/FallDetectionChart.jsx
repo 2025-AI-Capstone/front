@@ -109,29 +109,44 @@ const FallDetectionChart = () => {
     };
 
     return (
-        <div className="relative">
-            <div className="h-32 relative" ref={scrollContainerRef}>
+        <div className="relative bg-white p-4 rounded-xl shadow-md">
+            <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-gray-700 flex items-center">
+                    <span className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-2 py-0.5 rounded-full mr-2 text-xs font-semibold">실시간</span>
+                    쓰러짐 감지 타임라인
+                </h3>
+                <div className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-full">
+                    {visibleData.length > 0 &&
+                        `${visibleData[0].time} - ${visibleData[visibleData.length-1].time}`
+                    }
+                </div>
+            </div>
+
+            <div className="h-32 relative bg-gradient-to-b from-gray-50 to-white rounded-lg border border-gray-100" ref={scrollContainerRef}>
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={visibleData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                         <XAxis
                             dataKey="time"
-                            stroke="#aaa"
+                            stroke="#9ca3af"
                             padding={{ left: 10, right: 10 }}
+                            tick={{ fontSize: 10 }}
                         />
                         <YAxis
-                            stroke="#aaa"
+                            stroke="#9ca3af"
                             domain={[0, 1]}
                             ticks={[0, 1]}
+                            tick={{ fontSize: 10 }}
+                            tickFormatter={(value) => value === 0 ? '안전' : '감지'}
                         />
                         <Tooltip
                             content={({ active, payload, label }) => {
                                 if (active && payload && payload.length) {
                                     return (
-                                        <div className="bg-gray-800 p-2 border border-gray-700 rounded">
-                                            <p className="text-white text-sm">{label}</p>
-                                            <p className="text-sm text-white">
-                                                {payload[0].value === 0 ? "감지 없음" : "쓰러짐 감지"}
+                                        <div className="bg-white p-2 border border-gray-200 rounded-lg shadow-md">
+                                            <p className="text-gray-700 text-xs font-medium">{label}</p>
+                                            <p className="text-xs font-semibold mt-1" style={{ color: payload[0].value === 0 ? '#10b981' : '#ef4444' }}>
+                                                {payload[0].value === 0 ? "정상 상태" : "쓰러짐 감지됨"}
                                             </p>
                                         </div>
                                     );
@@ -142,10 +157,10 @@ const FallDetectionChart = () => {
                         <Line
                             type="monotone"
                             dataKey="count"
-                            stroke="#f56565"
+                            stroke="#ef4444"
                             strokeWidth={2}
-                            dot={{ fill: '#f56565', r: 4 }}
-                            activeDot={{ fill: '#e53e3e', r: 6, stroke: '#fff' }}
+                            dot={{ fill: '#fff', r: 4, strokeWidth: 2, stroke: '#ef4444' }}
+                            activeDot={{ fill: '#ef4444', r: 6, stroke: '#fff', strokeWidth: 2 }}
                             name="쓰러짐 감지"
                             animationDuration={1000}
                             isAnimationActive={true}
@@ -155,32 +170,31 @@ const FallDetectionChart = () => {
             </div>
 
             {/* 네비게이션 컨트롤 */}
-            <div className="flex justify-between mt-2">
+            <div className="flex justify-between mt-3">
                 <button
                     onClick={scrollLeft}
-                    className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm"
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 flex items-center shadow-sm"
                 >
-                    ◀ 과거
+                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    과거
                 </button>
                 <button
                     onClick={scrollToLatest}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                    className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 shadow-sm"
                 >
                     최신 데이터
                 </button>
                 <button
                     onClick={scrollRight}
-                    className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm"
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 flex items-center shadow-sm"
                 >
-                    최근 ▶
+                    최근
+                    <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                 </button>
-            </div>
-
-            {/* 데이터 범위 표시 */}
-            <div className="text-center text-xs text-gray-400 mt-1">
-                {visibleData.length > 0 &&
-                    `데이터 범위: ${visibleData[0].time} - ${visibleData[visibleData.length-1].time}`
-                }
             </div>
         </div>
     );
