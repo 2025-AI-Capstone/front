@@ -11,9 +11,7 @@ const ImageStreamWithDetection = () => {
   const frameCountRef = useRef(0);
   const startTimeRef = useRef(Date.now());
   const rosRef = useRef(null);
-  const imageTopicRef = useRef(null);
-  const keypointsTopicRef = useRef(null);
-  const bboxTopicRef = useRef(null);
+  const dashboardTopicRef = useRef(null);
 
   useEffect(() => {
     if (rosRef.current === null) {
@@ -38,54 +36,58 @@ const ImageStreamWithDetection = () => {
     }
 
     const subscribeToTopics = (ros) => {
-      if (!imageTopicRef.current) {
-        const imageTopic = new ROSLIB.Topic({ ros, name: '/camera/stream' });
-        imageTopic.subscribe((message) => {
-          if (message.data) {
-            setImageData(message.data);
-            frameCountRef.current += 1;
-            const elapsedTime = (Date.now() - startTimeRef.current) / 1000;
-            if (elapsedTime >= 1) {
-              setFps(Math.round(frameCountRef.current / elapsedTime));
-              frameCountRef.current = 0;
-              startTimeRef.current = Date.now();
+      // Subscribe to dashboard/data topic
+      if (!dashboardTopicRef.current) {
+        const dashboardTopic = new ROSLIB.Topic({ 
+          ros, 
+          name: '/dashboard/data',
+        });
+        
+        dashboardTopic.subscribe((message) => {
+          try {
+            const dashboardData = JSON.parse(message.data);
+            
+            // Extract data from the dashboard message
+            if (dashboardData.image) {
+              setImageData(dashboardData.image);
+              
+              // Update FPS counter
+              frameCountRef.current += 1;
+              const elapsedTime = (Date.now() - startTimeRef.current) / 1000;
+              if (elapsedTime >= 1) {
+                setFps(Math.round(frameCountRef.current / elapsedTime));
+                frameCountRef.current = 0;
+                startTimeRef.current = Date.now();
+              }
             }
-          }
-        });
-        imageTopicRef.current = imageTopic;
-      }
-
-      if (!keypointsTopicRef.current) {
-        const keypointsTopic = new ROSLIB.Topic({ ros, name: '/detector/web_keypoints' });
-        keypointsTopic.subscribe((message) => {
-          try {
-            setKeypoints(JSON.parse(message.data));
+            
+            if (dashboardData.bboxes) {
+              setBboxes(dashboardData.bboxes);
+            }
+            
+            if (dashboardData.keypoints) {
+              // Transform keypoints data to match the expected format
+              const formattedKeypoints = dashboardData.keypoints.map(person => ({
+                keypoints: person.map((point, idx) => ({
+                  x: point[0],
+                  y: point[1],
+                  confidence: point[2]
+                }))
+              }));
+              setKeypoints(formattedKeypoints);
+            }
           } catch (e) {
-            console.error('Failed to parse keypoints:', e);
+            console.error('Failed to parse dashboard data:', e);
           }
         });
-        keypointsTopicRef.current = keypointsTopic;
-      }
-
-      if (!bboxTopicRef.current) {
-        const bboxTopic = new ROSLIB.Topic({ ros, name: '/detector/web_bboxes' });
-        bboxTopic.subscribe((message) => {
-          try {
-            setBboxes(JSON.parse(message.data));
-          } catch (e) {
-            console.error('Failed to parse bboxes:', e);
-          }
-        });
-        bboxTopicRef.current = bboxTopic;
+        dashboardTopicRef.current = dashboardTopic;
       }
     };
 
     return () => {
-      imageTopicRef.current?.unsubscribe();
-      keypointsTopicRef.current?.unsubscribe();
-      bboxTopicRef.current?.unsubscribe();
+      dashboardTopicRef.current?.unsubscribe();
       rosRef.current?.close();
-      imageTopicRef.current = keypointsTopicRef.current = bboxTopicRef.current = rosRef.current = null;
+      dashboardTopicRef.current = rosRef.current = null;
     };
   }, []);
 
