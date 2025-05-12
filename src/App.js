@@ -11,7 +11,6 @@ import './App.css';
 
 function App() {
     const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
-    const [keypoints, setKeypoints] = useState([])
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -49,8 +48,8 @@ function App() {
                 <div className="grid grid-cols-12 gap-4">
                     {/* Main Video Stream - 9 columns */}
                     <div className="col-span-9 bg-white rounded-xl overflow-hidden shadow-md border border-gray-100">
-                        <ImageStreamWithDetection setKeypoints={setKeypoints} />
-                        <SpineCharacter keypoints={keypoints} />
+                        <ImageStreamWithDetection />
+                        <SpineCharacter />
                     </div>
 
                     {/* Right Sidebar - 3 columns */}

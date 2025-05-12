@@ -1,7 +1,9 @@
 import React, { useRef, useEffect } from 'react';
+import ROSLIB from 'roslib';
 
-const SpineCharacter = ({ keypoints }) => {
+const SpineCharacter = () => {
   const canvasRef = useRef(null);
+  const keypointsRef = useRef([]);
 
   const skeletonPairs = [
     [5, 7], [6, 8], [7, 9], [8, 10],
@@ -10,18 +12,49 @@ const SpineCharacter = ({ keypoints }) => {
   ];
 
   useEffect(() => {
+    const ros = new ROSLIB.Ros({ url: 'ws://localhost:9090' });
+
+    const dashboardTopic = new ROSLIB.Topic({
+      ros,
+      name: '/dashboard/data',
+      messageType: 'std_msgs/String',
+    });
+
+    dashboardTopic.subscribe((message) => {
+      try {
+        const data = JSON.parse(message.data);
+        if (data.keypoints && data.keypoints.length > 0) {
+          const firstPerson = data.keypoints[0]; // 하나만 사용
+          const formatted = firstPerson.map(([x, y, c]) => ({
+            x,
+            y,
+            confidence: c
+          }));
+          keypointsRef.current = formatted;
+        }
+      } catch (err) {
+        console.error('Invalid dashboard keypoint data:', err);
+      }
+    });
+
+    return () => {
+      dashboardTopic.unsubscribe();
+      ros.close();
+    };
+  }, []);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!keypoints || keypoints.length === 0) return;
-
-      const kp = keypoints[0].keypoints; // 첫 번째 사람만 그린다고 가정
+      const kp = keypointsRef.current;
+      if (!kp || kp.length === 0) return;
 
       ctx.strokeStyle = 'lime';
-      ctx.lineWidth = 3;
       ctx.fillStyle = 'red';
+      ctx.lineWidth = 3;
 
       skeletonPairs.forEach(([a, b]) => {
         const p1 = kp[a];
@@ -41,13 +74,21 @@ const SpineCharacter = ({ keypoints }) => {
           ctx.fill();
         }
       });
+
+      requestAnimationFrame(draw);
     };
 
-    const interval = setInterval(draw, 1000 / 30);
-    return () => clearInterval(interval);
-  }, [keypoints]);
+    draw();
+  }, []);
 
-  return <canvas ref={canvasRef} width={640} height={480} style={{ border: '1px solid #444' }} />;
+  return (
+    <canvas
+      ref={canvasRef}
+      width={640}
+      height={480}
+      style={{ border: '1px solid #ccc' }}
+    />
+  );
 };
 
 export default SpineCharacter;
