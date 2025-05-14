@@ -1,6 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // useNavigate 훅을 사용
 
 const QuickActions = () => {
+    const navigate = useNavigate(); // useNavigate 훅을 사용하여 페이지 이동 기능 추가
+
+    // 긴급 연락처 페이지로 이동하는 함수
+    const handleEmergencyContactClick = () => {
+        navigate('/emergency-contacts'); // 페이지 이동
+    };
+
     return (
         <div className="bg-white rounded-lg shadow-md p-4">
             <h2 className="text-sm font-bold mb-3 text-gray-700 border-b border-gray-100 pb-2 flex items-center">
@@ -11,7 +19,11 @@ const QuickActions = () => {
             </h2>
 
             <div className="grid grid-cols-2 gap-3">
-                <button className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-4 py-3 rounded-lg text-sm font-medium shadow-sm transition-all duration-200 flex items-center justify-center">
+                {/* Link 대신 useNavigate로 페이지 전환 */}
+                <button 
+                    onClick={handleEmergencyContactClick}
+                    className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-4 py-3 rounded-lg text-sm font-medium shadow-sm transition-all duration-200 flex items-center justify-center"
+                >
                     <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                     </svg>
