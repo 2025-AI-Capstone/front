@@ -34,11 +34,6 @@ function DashboardPage() {
                     <FallDetectionChart />
                 </div>
             </main>
-
-            {/* Footer */}
-            <footer className="bg-white py-3 px-4 text-center text-xs text-gray-500 border-t border-gray-100">
-                <p>© 2025 FOCUS - AI 기반 안전 모니터링 시스템</p>
-            </footer>
         </div>
     );
 }

@@ -5,7 +5,6 @@ const NodeStatus = () => {
         { name: '카메라', status: 'active', statusText: '정상' },
         { name: '객체 감지', status: 'active', statusText: '정상' },
         { name: '추적', status: 'active', statusText: '정상' },
-        { name: '쓰러짐 감지', status: 'alert', statusText: '알림' }
     ];
 
     const getStatusColor = (status) => {
@@ -86,13 +85,6 @@ const NodeStatus = () => {
                         </div>
                     </div>
                 ))}
-            </div>
-
-            <div className="mt-3 pt-2 border-t border-gray-100 flex justify-between items-center">
-                <div className="text-xs text-gray-500">마지막 업데이트: 1분 전</div>
-                <button className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-medium hover:bg-blue-100 transition-colors">
-                    새로고침
-                </button>
             </div>
         </div>
     );

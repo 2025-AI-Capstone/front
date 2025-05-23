@@ -10,7 +10,7 @@ const StatsPanel = () => {
                 오늘의 통계
             </h2>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-100">
                     <div className="text-xs text-blue-600 font-medium mb-1">총 객체 감지</div>
                     <div className="flex items-baseline">
@@ -32,14 +32,6 @@ const StatsPanel = () => {
                     <div className="flex items-baseline">
                         <span className="text-xl font-bold text-red-600">8</span>
                         <span className="text-xs text-red-500 ml-1">건</span>
-                    </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-3 border border-purple-100">
-                    <div className="text-xs text-purple-600 font-medium mb-1">신뢰도 평균</div>
-                    <div className="flex items-baseline">
-                        <span className="text-xl font-bold text-purple-700">87</span>
-                        <span className="text-xs text-purple-500 ml-1">%</span>
                     </div>
                 </div>
             </div>
