@@ -5,13 +5,14 @@ import ImageStreamWithDetection from '../components/video/ImageStreamWithDetecti
 import QuickActions from '../components/dashboard/QuickActions';
 import StatsPanel from '../components/dashboard/StatsPanel';
 import FallDetectionChart from '../components/dashboard/FallDetectionChart';
+import Header from "../components/common/Header";
 
 function DashboardPage() {
     return (
         <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
-            {/* Header */}
+            <Header />
             <div className="flex justify-between items-center p-4 bg-white shadow-sm">
-                {/* 여기에 대시보드 헤더 내용 추가 */}
+
             </div>
 
             {/* Main Content */}
@@ -21,10 +22,11 @@ function DashboardPage() {
                         <ImageStreamWithDetection />
                     </div>
                     <div className="col-span-3 space-y-4">
-                        <NodeStatus />
-                        <EventLog />
-                        <QuickActions />
+                        {/*<EventLog />*/}
+                        {/*<QuickActions />*/}
                         <StatsPanel />
+                        <NodeStatus />
+
                     </div>
                 </div>
 
