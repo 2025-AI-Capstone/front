@@ -30,9 +30,9 @@ function DashboardPage() {
                     </div>
                 </div>
 
-                <div className="mt-4 bg-white rounded-xl p-4 shadow-md border border-gray-100">
+                {/*<div className="mt-4 bg-white rounded-xl p-4 shadow-md border border-gray-100">
                     <FallDetectionChart />
-                </div>
+                </div>*/}
             </main>
         </div>
     );
