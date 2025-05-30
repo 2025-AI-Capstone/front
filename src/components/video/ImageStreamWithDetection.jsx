@@ -97,9 +97,9 @@ const ImageStreamWithDetection = () => {
   ];
 
   return (
-      <div className="relative w-[1240px] h-[780px] rounded-xl overflow-hidden shadow-lg border border-gray-100">
+      <div className="relative w-full h-full rounded-xl overflow-hidden shadow-lg border border-gray-100">
         {!imageData && (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 w-[1240px] h-[780px] flex items-center justify-center">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 w-full h-full flex items-center justify-center">
               <div className="text-center p-6">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-3"></div>
                 <p className="text-gray-700">카메라 스트림 연결 중...</p>
@@ -108,18 +108,18 @@ const ImageStreamWithDetection = () => {
         )}
 
         {imageData && (
-            <div className="relative">
+            <div className="relative w-full h-full">
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none z-10" />
               <img
                   src={`data:image/jpeg;base64,${imageData}`}
                   alt="Live Stream"
-                  className="w-[1240px] h-[780px] object-cover"
+                  className="w-full h-full object-cover"
               />
 
               <svg
-                  className="absolute top-0 left-0 w-[1240px] h-[780px] pointer-events-none z-20"
+                  className="absolute top-0 left-0 w-full h-full pointer-events-none z-20"
                   viewBox="0 0 640 480"
-                  preserveAspectRatio="xMidYMid meet"
+                  preserveAspectRatio="none"
               >
                 {bboxes.map((bbox, index) => (
                     <rect
