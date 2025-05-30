@@ -1,74 +1,57 @@
-<<<<<<< HEAD
-# Getting Started with Create React App
+# Frontend - 실시간 모니터링 대시보드
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 프로젝트 개요
 
-## Available Scripts
+이 프로젝트는 ROS2 기반 CCTV 실시간 영상 스트리밍과 객체 탐지, 포즈 추정, 쓰러짐 감지 알림 기능을 포함하는 작업자 안전 모니터링 대시보드를 React로 구현한 프론트엔드입니다.
+실시간으로 수신되는 영상과 센서 데이터를 효과적으로 시각화하고, 알림 시스템을 통해 위험 상황을 신속히 전달하는 것을 목표로 합니다.
 
-In the project directory, you can run:
+## 주요 기능
 
-### `npm start`
+CCTV 실시간 영상 스트리밍
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+객체 탐지 및 포즈 추정 결과 시각화
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+노드 상태 모니터링 패널
 
-### `npm test`
+쓰러짐 감지 및 알림 시스템
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+반응형 UI 및 실시간 데이터 렌더링
 
-### `npm run build`
+## 사용 기술
+React
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+TypeScript
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+WebSocket (ROSLIB)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+TailwindCSS
 
-### `npm run eject`
+## 프로젝트 구조
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+src/
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+├── components/
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+│   ├── common/      - 공통 UI 컴포넌트
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+│   ├── auth/        - 로그인  컴포넌트
 
-## Learn More
+│   ├── dashboard/   - 대시보드 관련 컴포넌트
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+│   └── video/       - 비디오 스트림 관련 컴포넌트
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+├── services/        - WebSocket 연결 및 데이터 처리
 
-### Code Splitting
+├── hooks/           - 커스텀 React 훅
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+└── pages/           - 페이지 
 
-### Analyzing the Bundle Size
+## 실행 방법
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. 의존성 설치
 
-### Making a Progressive Web App
+npm install
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
-# front
->>>>>>> 43a181fc3c4c0071e6f96f713dfbb1054cb6875d
+2. 실행
+   
+npm start
