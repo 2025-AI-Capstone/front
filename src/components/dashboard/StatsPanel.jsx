@@ -38,9 +38,6 @@ const StatsPanel = () => {
 
             <div className="mt-3 pt-2 border-t border-gray-100 flex justify-between items-center">
                 <div className="text-xs text-gray-500">데이터 기준: 오늘</div>
-                <button className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-full font-medium transition-colors">
-                    주간 통계 보기
-                </button>
             </div>
         </div>
     );
