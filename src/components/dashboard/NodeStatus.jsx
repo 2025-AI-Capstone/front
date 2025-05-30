@@ -155,11 +155,6 @@ const NodeStatus = () => {
                             </div>
                             <div>
                                 <span className="text-sm font-medium text-gray-700">{node.name}</span>
-                                {node.timestamp && (
-                                    <div className="text-xs text-gray-500">
-                                        {new Date(node.timestamp).toLocaleString('ko-KR')}
-                                    </div>
-                                )}
                             </div>
                         </div>
                         <div className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBg(node.status)} ${getTextColor(node.status)} shadow-sm`}>
@@ -176,7 +171,7 @@ const NodeStatus = () => {
                     className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full font-medium transition-colors"
                     disabled={loading}
                 >
-                    {loading ? '로딩 중...' : '수동 새로고침'}
+                    {loading ? '로딩 중...' : '새로고침'}
                 </button>
             </div>
         </div>
