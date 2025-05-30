@@ -21,7 +21,7 @@ const SettingsPage = () => {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const response = await axios.get('/api/emergency-contacts');
+        const response = await axios.get('/emergency-contacts/me');
         setContacts(response.data);
       } catch (error) {
         console.error('연락처 불러오기 실패:', error);
@@ -43,7 +43,7 @@ const SettingsPage = () => {
       if (editingIndex !== null) {
         // 수정일 경우 PUT 요청
         const contactToEdit = contacts[editingIndex];
-        const response = await axios.put(`/api/emergency-contacts/${contactToEdit.id}`, formData);
+        const response = await axios.put(`/emergency-contacts/${contactToEdit.id}`, formData);
         const updatedContact = response.data;
 
         const updatedContacts = [...contacts];
@@ -52,7 +52,7 @@ const SettingsPage = () => {
         setEditingIndex(null);
       } else {
         // 추가일 경우 POST 요청
-        const response = await axios.post('/api/emergency-contacts', formData);
+        const response = await axios.post('/emergency-contacts', formData);
         const newContact = response.data;
         setContacts([...contacts, newContact]);
       }
@@ -72,7 +72,7 @@ const SettingsPage = () => {
   const handleDelete = async (index) => {
     try {
       const contactToDelete = contacts[index];
-      await axios.delete(`/api/emergency-contacts/${contactToDelete.id}`);
+      await axios.delete(`/emergency-contacts/${contactToDelete.id}`);
 
       const updated = contacts.filter((_, i) => i !== index);
       setContacts(updated);

@@ -8,7 +8,7 @@ import './App.css';
 import axios from 'axios';
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userId, setUserId] = useState(null);
     const [username, setUsername] = useState('');
     const [token, setToken] = useState('');
