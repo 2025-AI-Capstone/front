@@ -5,6 +5,7 @@ import ImageStreamWithDetection from '../components/video/ImageStreamWithDetecti
 import QuickActions from '../components/dashboard/QuickActions';
 import StatsPanel from '../components/dashboard/StatsPanel';
 import FallDetectionChart from '../components/dashboard/FallDetectionChart';
+import ChatPanel from '../components/chat/ChatPanel';
 import Header from "../components/common/Header";
 
 function DashboardPage() {
@@ -20,12 +21,22 @@ function DashboardPage() {
                         <ImageStreamWithDetection />
                     </div>
 
-                    {/* 사이드바 - 스크롤 가능 */}
-                    <div className="col-span-3 space-y-4 overflow-y-auto h-full">
-                        <StatsPanel />
-                        <NodeStatus />
-                        {/*<EventLog />*/}
-                        {/*<QuickActions />*/}
+                    {/* 사이드바 - flexbox로 변경 */}
+                    <div className="col-span-3 flex flex-col gap-4 h-full">
+                        {/* 1. 채팅 패널 - 가장 큰 영역 */}
+                        <div className="flex-[2] min-h-0">
+                            <ChatPanel />
+                        </div>
+
+                        {/* 2. 오늘의 통계 - 작은 영역 */}
+                        <div className="flex-[1] min-h-0">
+                            <StatsPanel />
+                        </div>
+
+                        {/* 3. 시스템 상태 - 중간 영역 */}
+                        <div className="flex-[1.5] min-h-0">
+                            <NodeStatus />
+                        </div>
                     </div>
                 </div>
 
