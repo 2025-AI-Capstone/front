@@ -97,15 +97,6 @@ const ChatPanel = () => {
                 </div>
             </div>
 
-            {/* 에러 메시지 */}
-            {error && (
-                <div className="p-2 border-b border-gray-100 flex-shrink-0">
-                    <div className="text-xs text-red-600 bg-red-50 p-2 rounded">
-                        {error}
-                    </div>
-                </div>
-            )}
-
             {/* 메시지 목록 */}
             <div className="flex-1 overflow-y-auto p-2 space-y-2 min-h-0">
                 {messages.length === 0 && !loading ? (
