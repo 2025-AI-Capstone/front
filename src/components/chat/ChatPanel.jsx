@@ -38,7 +38,6 @@ const ChatPanel = () => {
                         id: log.id,
                         message: log.message,
                         timestamp: log.detected_at,
-                        confidence: log.confidence_score,
                         status: log.status
                     }))
                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -61,13 +60,6 @@ const ChatPanel = () => {
         const interval = setInterval(fetchChatLogs, 30000);
         return () => clearInterval(interval);
     }, [sessionId]);
-
-    // 신뢰도에 따른 스타일
-    const getConfidenceColor = (confidence) => {
-        if (confidence >= 0.8) return 'border-l-green-400 bg-green-50';
-        if (confidence >= 0.6) return 'border-l-yellow-400 bg-yellow-50';
-        return 'border-l-red-400 bg-red-50';
-    };
 
     return (
         <div className="bg-white rounded-lg shadow-md border border-gray-100 h-full flex flex-col overflow-hidden">
@@ -127,7 +119,7 @@ const ChatPanel = () => {
                     messages.map((msg) => (
                         <div
                             key={msg.id}
-                            className={`border-l-4 p-2 rounded-r-lg ${getConfidenceColor(msg.confidence)}`}
+                            className="border-l-4 border-l-blue-400 bg-blue-50 p-2 rounded-r-lg"
                         >
                             <p className="text-xs text-gray-800 mb-1 leading-relaxed">
                                 {msg.message}
@@ -136,14 +128,9 @@ const ChatPanel = () => {
                                 <span>
                                     {new Date(msg.timestamp).toLocaleTimeString('ko-KR')}
                                 </span>
-                                <div className="flex items-center space-x-1">
-                                    <span className="px-1 py-0.5 rounded bg-gray-200 text-gray-600">
-                                        {msg.status}
-                                    </span>
-                                    <span className="font-medium">
-                                        {(msg.confidence * 100).toFixed(0)}%
-                                    </span>
-                                </div>
+                                <span className="px-1 py-0.5 rounded bg-gray-200 text-gray-600">
+                                    {msg.status}
+                                </span>
                             </div>
                         </div>
                     ))
