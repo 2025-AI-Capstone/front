@@ -4,6 +4,7 @@ import Login from './components/auth/Login';
 import DashboardPage from './pages/DashboardPage';
 import EmergencyContacts from './pages/EmergencyContacts';
 import SettingsPage from './pages/SettingsPage'; // ✅ 설정 페이지 import 추가
+import EventLog from './components/dashboard/EventLog'; //✅ 로그그 페이지 import 추가
 import './App.css';
 import axios from 'axios';
 
@@ -85,6 +86,7 @@ function App() {
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/emergency-contacts" element={<EmergencyContacts />} />
                 <Route path="/settings" element={<SettingsPage />} /> {/* ✅ 설정 페이지 라우팅 추가 */}
+                <Route path="/logs" element={<EventLog />} />  {/* 로그 페이지 라우팅 추가 */}
             </Routes>
         </Router>
     );

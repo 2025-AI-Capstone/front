@@ -1,6 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const StatsPanel = () => {
+    const [stats, setStats] = useState(null);       // 통계 데이터 저장
+    const [loading, setLoading] = useState(true);   // 로딩 상태 관리
+
+    useEffect(() => {
+        // 컴포넌트 마운트 시 API 요청
+        const fetchStats = async () => {
+            try {
+                const response = await axios.get('/stats/today');
+                setStats(response.data);
+            } catch (error) {
+                console.error('오늘의 통계 불러오기 실패:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
+    // 로딩 중 화면
+    if (loading) {
+        return (
+            <div className="bg-white rounded-lg shadow-md p-4 h-full flex items-center justify-center text-gray-500">
+                로딩 중...
+            </div>
+        );
+    }
+
+    // 에러 또는 데이터 없음
+    if (!stats) {
+        return (
+            <div className="bg-white rounded-lg shadow-md p-4 h-full flex items-center justify-center text-red-500">
+                데이터를 불러오지 못했습니다.
+            </div>
+        );
+    }
+
     return (
         <div className="bg-white rounded-lg shadow-md p-4 h-full flex flex-col">
             <h2 className="text-sm font-bold mb-3 text-gray-700 border-b border-gray-100 pb-2 flex items-center justify-between flex-shrink-0">
@@ -10,31 +48,34 @@ const StatsPanel = () => {
                     </svg>
                     오늘의 통계
                 </div>
-                <div className="text-xs text-gray-500">데이터 기준: 오늘</div>
+                <div className="text-xs text-gray-500">데이터 기준: {stats.date}</div>
             </h2>
 
             <div className="flex-1 flex items-center justify-center">
                 <div className="grid grid-cols-3 gap-3 w-full">
+                    {/* 총 객체 감지 */}
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-100">
                         <div className="text-xs text-blue-600 font-medium mb-1">총 객체 감지</div>
                         <div className="flex items-baseline">
-                            <span className="text-xl font-bold text-blue-700">127</span>
+                            <span className="text-xl font-bold text-blue-700">{stats.object_detection_count}</span>
                             <span className="text-xs text-blue-500 ml-1">개체</span>
                         </div>
                     </div>
 
+                    {/* 총 추적 시간 */}
                     <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-lg p-3 border border-green-100">
                         <div className="text-xs text-green-600 font-medium mb-1">총 추적 시간</div>
                         <div className="flex items-baseline">
-                            <span className="text-xl font-bold text-green-700">3.5</span>
+                            <span className="text-xl font-bold text-green-700">{stats.tracking_time_hour}</span>
                             <span className="text-xs text-green-500 ml-1">시간</span>
                         </div>
                     </div>
 
+                    {/* 쓰러짐 감지 */}
                     <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-lg p-3 border border-red-100">
                         <div className="text-xs text-red-600 font-medium mb-1">쓰러짐 감지</div>
                         <div className="flex items-baseline">
-                            <span className="text-xl font-bold text-red-600">8</span>
+                            <span className="text-xl font-bold text-red-600">{stats.fall_event_count}</span>
                             <span className="text-xs text-red-500 ml-1">건</span>
                         </div>
                     </div>
