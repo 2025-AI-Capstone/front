@@ -7,7 +7,6 @@ const NodeStatus = () => {
     const [error, setError] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
 
-    // 시스템 상태 가져오기
     const fetchSystemStatus = async () => {
         try {
             setLoading(true);
@@ -25,7 +24,14 @@ const NodeStatus = () => {
             }
 
             const updatedNodes = data
-                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // 최신 순 정렬
+                .sort((a, b) => {
+                    const timeDiff = new Date(b.timestamp) - new Date(a.timestamp);
+                    if (timeDiff !== 0) return timeDiff;
+
+                    const nameA = (a.node_name || '').toLowerCase();
+                    const nameB = (b.node_name || '').toLowerCase();
+                    return nameA.localeCompare(nameB);
+                })
                 .map((node) => {
                     let status = 'inactive';
                     let statusText = '비작동';
