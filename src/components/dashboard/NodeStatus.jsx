@@ -2,11 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const NodeStatus = () => {
-    const [nodes, setNodes] = useState([
-        { name: '카메라', status: 'inactive', statusText: '비작동' },
-        { name: '객체 감지', status: 'inactive', statusText: '비작동' },
-        { name: '낙상 감지', status: 'inactive', statusText: '비작동' },
-    ]);
+    const [nodes, setNodes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
@@ -16,7 +12,7 @@ const NodeStatus = () => {
             case 'camera':
                 return '카메라';
             case 'detector':
-                return '객체 감지';;
+                return '객체 감지';
             case 'falldetector':
                 return '낙상 감지';
             default:
@@ -28,26 +24,20 @@ const NodeStatus = () => {
         try {
             setLoading(true);
             setError(null);
-    
+
             const response = await axios.get('/system-statuses', {
                 timeout: 10000,
             });
-    
+
             const data = response.data;
-            console.log('시스템 상태 응답:', data);
-    
             if (!Array.isArray(data)) {
                 throw new Error('서버 응답 형식이 올바르지 않습니다');
             }
-    
-            if (data.length === 0) {
-                throw new Error('시스템 상태 데이터가 없습니다');
-            }
-    
+
             const updatedNodes = data.map((node) => {
-                let status, statusText;
                 const nodeStatus = node.status?.toLowerCase();
-    
+                let status, statusText;
+
                 if (nodeStatus === 'active' || nodeStatus === 'running') {
                     status = 'active';
                     statusText = '작동';
@@ -55,39 +45,34 @@ const NodeStatus = () => {
                     status = 'inactive';
                     statusText = '비작동';
                 }
-    
+
                 return {
                     id: node.id,
+                    node_name: node.node_name,
                     name: mapNodeName(node.node_name),
                     status,
                     statusText,
                     timestamp: node.timestamp,
                 };
             });
-    
+
             setNodes(updatedNodes);
             setLastUpdated(new Date().toLocaleTimeString('ko-KR'));
         } catch (err) {
             console.error('시스템 상태 불러오기 실패:', err);
-    
             const errorMessage = err.response?.status === 404
                 ? 'API 엔드포인트를 찾을 수 없습니다'
                 : err.response?.status === 500
                     ? '서버 내부 오류입니다'
                     : err.message || '시스템 상태를 불러올 수 없습니다';
-    
+
             setError(errorMessage);
-    
-            setNodes([
-                { name: '카메라', status: 'inactive', statusText: '비작동' },
-                { name: '객체 감지', status: 'inactive', statusText: '비작동' },
-                { name: '낙상 감지', status: 'inactive', statusText: '비작동' },
-            ]);
+            setNodes([]);
         } finally {
             setLoading(false);
         }
     };
-    
+
     useEffect(() => {
         fetchSystemStatus();
         const interval = setInterval(fetchSystemStatus, 30000);
@@ -120,7 +105,6 @@ const NodeStatus = () => {
 
     return (
         <div className="bg-white rounded-lg shadow-md p-4 h-full flex flex-col">
-            {/* 헤더 */}
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-100 flex-shrink-0">
                 <div className="flex items-center">
                     <svg className="w-4 h-4 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,35 +129,36 @@ const NodeStatus = () => {
                 </div>
             </div>
 
-            {/* 에러 메시지 */}
             {error && (
                 <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg flex-shrink-0">
                     <p className="text-xs text-red-600">{error}</p>
                 </div>
             )}
 
-            {/* 마지막 업데이트 시간 */}
             {lastUpdated && (
                 <div className="mb-3 text-xs text-gray-500 flex-shrink-0">
                     마지막 업데이트: {lastUpdated}
                 </div>
             )}
 
-            {/* 노드 목록 */}
             <div className="flex-1 space-y-2 overflow-hidden min-h-0">
-                {nodes.slice(0, 3).map((node, index) => (
-                    <div key={node.id || index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2.5 transition-all hover:bg-gray-100">
-                        <div className="flex items-center">
-                            <div className={`w-8 h-8 rounded-full ${getStatusBg(node.status)} flex items-center justify-center mr-3 shadow-sm`}>
-                                {getStatusIcon(node.status)}
+                {nodes.length === 0 ? (
+                    <p className="text-sm text-gray-500">노드 상태 정보가 없습니다.</p>
+                ) : (
+                    nodes.map((node, index) => (
+                        <div key={node.node_name || index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2.5 transition-all hover:bg-gray-100">
+                            <div className="flex items-center">
+                                <div className={`w-8 h-8 rounded-full ${getStatusBg(node.status)} flex items-center justify-center mr-3 shadow-sm`}>
+                                    {getStatusIcon(node.status)}
+                                </div>
+                                <span className="text-sm font-medium text-gray-700">{node.name}</span>
                             </div>
-                            <span className="text-sm font-medium text-gray-700">{node.name}</span>
+                            <div className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBg(node.status)} ${getTextColor(node.status)} shadow-sm`}>
+                                {node.statusText}
+                            </div>
                         </div>
-                        <div className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBg(node.status)} ${getTextColor(node.status)} shadow-sm`}>
-                            {node.statusText}
-                        </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
         </div>
     );
