@@ -28,32 +28,34 @@ const NodeStatus = () => {
         try {
             setLoading(true);
             setError(null);
-
+    
             const response = await axios.get('/system-statuses', {
                 timeout: 10000,
             });
-
+    
             const data = response.data;
             console.log('시스템 상태 응답:', data);
-
+    
             if (!Array.isArray(data)) {
                 throw new Error('서버 응답 형식이 올바르지 않습니다');
             }
-
+    
             if (data.length === 0) {
                 throw new Error('시스템 상태 데이터가 없습니다');
             }
-
+    
             const updatedNodes = data.map((node) => {
-                let status = 'inactive';
-                let statusText = '비작동';
-
+                let status, statusText;
                 const nodeStatus = node.status?.toLowerCase();
+    
                 if (nodeStatus === 'active' || nodeStatus === 'running') {
                     status = 'active';
                     statusText = '작동';
+                } else {
+                    status = 'inactive';
+                    statusText = '비작동';
                 }
-
+    
                 return {
                     id: node.id,
                     name: mapNodeName(node.node_name),
@@ -62,20 +64,20 @@ const NodeStatus = () => {
                     timestamp: node.timestamp,
                 };
             });
-
+    
             setNodes(updatedNodes);
             setLastUpdated(new Date().toLocaleTimeString('ko-KR'));
         } catch (err) {
             console.error('시스템 상태 불러오기 실패:', err);
-
+    
             const errorMessage = err.response?.status === 404
                 ? 'API 엔드포인트를 찾을 수 없습니다'
                 : err.response?.status === 500
                     ? '서버 내부 오류입니다'
                     : err.message || '시스템 상태를 불러올 수 없습니다';
-
+    
             setError(errorMessage);
-
+    
             setNodes([
                 { name: '카메라', status: 'inactive', statusText: '비작동' },
                 { name: '객체 감지', status: 'inactive', statusText: '비작동' },
@@ -85,7 +87,7 @@ const NodeStatus = () => {
             setLoading(false);
         }
     };
-
+    
     useEffect(() => {
         fetchSystemStatus();
         const interval = setInterval(fetchSystemStatus, 30000);
