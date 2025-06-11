@@ -8,7 +8,7 @@ const ChatPanel = () => {
     const prevLengthRef = useRef(0);
     const messagesEndRef = useRef(null);
 
-    // 하단 스크롤
+    // 맨 아래로 스크롤
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -24,35 +24,32 @@ const ChatPanel = () => {
             const data = response.data;
 
             if (Array.isArray(data)) {
-                const filteredMessages = data
-                    .filter(log => 
-                        (log.event_type === 'talk' || log.event_type === 'fall_alert') &&
-                        log.status && log.status.trim() !== ''
-                    )
-                    .map(log => ({
+                const sttMessages = data
+                    .filter((log) => log.message && log.message.trim() !== '')
+                    .map((log) => ({
                         id: log.id,
-                        event_type: log.event_type,
-                        status: log.status,
                         message: log.message,
                         timestamp: log.detected_at,
+                        status: log.status,
                     }))
                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-                if (filteredMessages.length > prevLengthRef.current) {
-                    setMessages(filteredMessages);
-                    prevLengthRef.current = filteredMessages.length;
+                // 메시지가 추가되었을 때만 스크롤
+                if (sttMessages.length > prevLengthRef.current) {
+                    setMessages(sttMessages);
+                    prevLengthRef.current = sttMessages.length;
                     setTimeout(scrollToBottom, 100);
                 } else {
-                    setMessages(filteredMessages);
-                    prevLengthRef.current = filteredMessages.length;
+                    setMessages(sttMessages);
+                    prevLengthRef.current = sttMessages.length;
                 }
             } else {
                 setMessages([]);
                 prevLengthRef.current = 0;
             }
         } catch (err) {
-            console.error('대화 로그 불러오기 실패:', err);
-            setError('데이터를 불러올 수 없습니다.');
+            console.error('STT 대화 로그 불러오기 실패:', err);
+            setError('대화 로그를 불러올 수 없습니다.');
             setMessages([]);
             prevLengthRef.current = 0;
         } finally {
@@ -81,8 +78,8 @@ const ChatPanel = () => {
                 )}
             </div>
 
-            {/* 스크롤 영역 */}
-            <div className="overflow-y-auto px-3 py-3 space-y-2 border-b border-gray-100" style={{ height: '280px' }}>
+            {/* 고정된 높이의 스크롤 영역 */}
+            <div className="overflow-y-auto px-2 py-2 space-y-2 border-b border-gray-100" style={{ height: '280px' }}>
                 {messages.length === 0 && !loading ? (
                     <div className="text-center text-gray-500 text-sm py-4">
                         <svg className="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,63 +88,31 @@ const ChatPanel = () => {
                         <p className="text-xs">대화 기록이 없습니다</p>
                     </div>
                 ) : (
-                    messages.map((msg) => {
-                        let query = null;
-                        let answer = null;
-                        let fallbackMessage = null;
-
-                        if (msg.event_type === 'talk') {
-                            try {
-                                const parsed = JSON.parse(msg.status);
-                                query = parsed.query;
-                                answer = parsed.answer;
-                            } catch (e) {
-                                fallbackMessage = msg.status;
-                            }
-                        } else if (msg.event_type === 'fall_alert') {
-                            fallbackMessage = msg.status || msg.message || '낙상 경고 발생';
-                        }
-
-                        return (
-                            <div
-                                key={msg.id}
-                                className={`p-2 rounded ${
-                                    msg.event_type === 'fall_alert'
-                                        ? 'bg-red-100 border-l-4 border-red-500'
-                                        : 'bg-blue-50 border-l-4 border-blue-400'
-                                }`}
-                            >
-                                {query && (
-                                    <p className="text-xs text-gray-700 mb-1">
-                                        <strong>🙋 사용자:</strong> {query}
-                                    </p>
-                                )}
-                                {answer && (
-                                    <p className="text-xs text-gray-800 mb-1">
-                                        <strong>🤖 응답:</strong> {answer}
-                                    </p>
-                                )}
-                                {fallbackMessage && (
-                                    <p className="text-xs text-gray-800 mb-1">{fallbackMessage}</p>
-                                )}
-                                <div className="flex justify-between text-xs text-gray-500">
-                                    <span>{new Date(msg.timestamp).toLocaleTimeString('ko-KR')}</span>
-                                    <span className="px-1 py-0.5 rounded bg-gray-200 text-gray-600">
-                                        {msg.event_type}
-                                    </span>
-                                </div>
+                    messages.map((msg) => (
+                        <div
+                            key={msg.id}
+                            className="border-l-4 border-blue-400 bg-blue-50 p-2 rounded-r-lg"
+                        >
+                            <p className="text-xs text-gray-800 mb-1 leading-relaxed">
+                                {msg.message}
+                            </p>
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                                <span>{new Date(msg.timestamp).toLocaleTimeString('ko-KR')}</span>
+                                <span className="px-1 py-0.5 rounded bg-gray-200 text-gray-600">
+                                    {msg.status}
+                                </span>
                             </div>
-                        );
-                    })
+                        </div>
+                    ))
                 )}
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* 하단 상태 */}
+            {/* 하단 정보 */}
             <div className="p-2 bg-gray-50">
                 <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>총 {messages.length}개</span>
-                    <span>30초마다 자동 업데이트</span>
+                    <span>30초 자동 업데이트</span>
                 </div>
             </div>
         </div>
