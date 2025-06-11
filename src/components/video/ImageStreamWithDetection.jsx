@@ -93,7 +93,7 @@ const ImageStreamWithDetection = () => {
                 fallTimerRef.current = setTimeout(() => {
                   setFallDetected(false);
                   fallTimerRef.current = null;
-                }, 5000);
+                }, 3000);
               }
 
               // 현재 상태 저장

@@ -79,7 +79,7 @@ const ChatPanel = () => {
             </div>
 
             {/* 고정된 높이의 스크롤 영역 */}
-            <div className="overflow-y-auto px-2 py-2 space-y-2 border-b border-gray-100" style={{ height: '400px' }}>
+            <div className="overflow-y-auto px-2 py-2 space-y-2 border-b border-gray-100" style={{ height: '280px' }}>
                 {messages.length === 0 && !loading ? (
                     <div className="text-center text-gray-500 text-sm py-4">
                         <svg className="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
