@@ -46,7 +46,6 @@ const EventLog = () => {
               <th className="px-6 py-3 text-left">시간</th>
               <th className="px-6 py-3 text-left">유형</th>
               <th className="px-6 py-3 text-left">상태</th>
-              <th className="px-6 py-3 text-left">메시지</th>
             </tr>
           </thead>
           <tbody>
@@ -72,7 +71,6 @@ const EventLog = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700">{log.status}</td>
-                  <td className="px-6 py-4 text-sm text-gray-800">{log.message || '-'}</td>
                 </tr>
               ))
             )}
