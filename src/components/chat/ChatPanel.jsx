@@ -8,7 +8,6 @@ const ChatPanel = () => {
     const prevLengthRef = useRef(0);
     const messagesEndRef = useRef(null);
 
-    // 맨 아래로 스크롤
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -34,7 +33,6 @@ const ChatPanel = () => {
                     }))
                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-                // 메시지가 추가되었을 때만 스크롤
                 if (sttMessages.length > prevLengthRef.current) {
                     setMessages(sttMessages);
                     prevLengthRef.current = sttMessages.length;
@@ -78,8 +76,8 @@ const ChatPanel = () => {
                 )}
             </div>
 
-            {/* 고정된 높이의 스크롤 영역 */}
-            <div className="overflow-y-auto px-2 py-2 space-y-2 border-b border-gray-100" style={{ height: '280px' }}>
+            {/* 메시지 영역 */}
+            <div className="overflow-y-auto px-3 py-3 space-y-3 border-b border-gray-100" style={{ height: '280px' }}>
                 {messages.length === 0 && !loading ? (
                     <div className="text-center text-gray-500 text-sm py-4">
                         <svg className="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,17 +89,17 @@ const ChatPanel = () => {
                     messages.map((msg) => (
                         <div
                             key={msg.id}
-                            className="border-l-4 border-blue-400 bg-blue-50 p-2 rounded-r-lg"
+                            className="bg-blue-50 border-l-4 border-blue-400 rounded-r-lg px-4 py-2 shadow-sm"
                         >
-                            <p className="text-xs text-gray-800 mb-1 leading-relaxed">
-                                {msg.message}
-                            </p>
-                            <div className="flex items-center justify-between text-xs text-gray-500">
-                                <span>{new Date(msg.timestamp).toLocaleTimeString('ko-KR')}</span>
-                                <span className="px-1 py-0.5 rounded bg-gray-200 text-gray-600">
+                            <div className="flex justify-between items-center mb-1">
+                                <span className="text-xs text-gray-500">
+                                    {new Date(msg.timestamp).toLocaleTimeString('ko-KR')}
+                                </span>
+                                <span className="text-xs text-gray-600 bg-gray-200 px-2 py-0.5 rounded">
                                     {msg.status}
                                 </span>
                             </div>
+                            <p className="text-sm text-gray-800 leading-snug">{msg.message}</p>
                         </div>
                     ))
                 )}
@@ -109,11 +107,9 @@ const ChatPanel = () => {
             </div>
 
             {/* 하단 정보 */}
-            <div className="p-2 bg-gray-50">
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>총 {messages.length}개</span>
-                    <span>30초 자동 업데이트</span>
-                </div>
+            <div className="p-2 bg-gray-50 border-t border-gray-100 text-xs text-gray-500 flex justify-between">
+                <span>총 {messages.length}개</span>
+                <span>30초마다 자동 업데이트</span>
             </div>
         </div>
     );
