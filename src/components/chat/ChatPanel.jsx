@@ -5,8 +5,10 @@ const ChatPanel = () => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const prevLengthRef = useRef(0);
     const messagesEndRef = useRef(null);
 
+    // 맨 아래로 스크롤
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -32,14 +34,24 @@ const ChatPanel = () => {
                     }))
                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-                setMessages(sttMessages);
+                // 메시지가 추가되었을 때만 스크롤
+                if (sttMessages.length > prevLengthRef.current) {
+                    setMessages(sttMessages);
+                    prevLengthRef.current = sttMessages.length;
+                    setTimeout(scrollToBottom, 100);
+                } else {
+                    setMessages(sttMessages);
+                    prevLengthRef.current = sttMessages.length;
+                }
             } else {
                 setMessages([]);
+                prevLengthRef.current = 0;
             }
         } catch (err) {
             console.error('STT 대화 로그 불러오기 실패:', err);
             setError('대화 로그를 불러올 수 없습니다.');
             setMessages([]);
+            prevLengthRef.current = 0;
         } finally {
             setLoading(false);
         }
@@ -50,10 +62,6 @@ const ChatPanel = () => {
         const interval = setInterval(fetchChatLogs, 30000);
         return () => clearInterval(interval);
     }, []);
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
 
     return (
         <div className="bg-white rounded-lg shadow-md border border-gray-100 h-full flex flex-col">
@@ -70,8 +78,8 @@ const ChatPanel = () => {
                 )}
             </div>
 
-            {/* 메시지 목록 */}
-            <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2" style={{ maxHeight: '400px' }}>
+            {/* 고정된 높이의 스크롤 영역 */}
+            <div className="overflow-y-auto px-2 py-2 space-y-2 border-b border-gray-100" style={{ height: '400px' }}>
                 {messages.length === 0 && !loading ? (
                     <div className="text-center text-gray-500 text-sm py-4">
                         <svg className="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,7 +109,7 @@ const ChatPanel = () => {
             </div>
 
             {/* 하단 정보 */}
-            <div className="p-2 border-t border-gray-100 bg-gray-50">
+            <div className="p-2 bg-gray-50">
                 <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>총 {messages.length}개</span>
                     <span>30초 자동 업데이트</span>
