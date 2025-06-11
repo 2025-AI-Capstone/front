@@ -1,6 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
+const bubbleStyle = {
+  talk: {
+    bg: 'bg-blue-50',
+    border: 'border-blue-400',
+    icon: '🤖',
+    label: 'AI 응답',
+  },
+  fall_alert: {
+    bg: 'bg-red-50',
+    border: 'border-red-400',
+    icon: '🚨',
+    label: '낙상 경고',
+  },
+};
+
 const ChatPanel = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,12 +35,12 @@ const ChatPanel = () => {
 
       if (Array.isArray(data)) {
         const parsed = data
-          .filter(log => log.status && log.status.includes('{')) // JSON 형태인 것만
+          .filter(log => log.status && log.status.includes('{'))
           .map(log => {
             let parsedStatus;
             try {
               parsedStatus = JSON.parse(log.status);
-            } catch (e) {
+            } catch {
               parsedStatus = {};
             }
             return {
@@ -75,25 +90,29 @@ const ChatPanel = () => {
             <p className="text-xs">대화 기록이 없습니다</p>
           </div>
         ) : (
-          messages.map((msg, idx) => (
-            <div key={msg.id || idx} className="space-y-1">
-              {msg.query && (
-                <div className="bg-gray-100 border-l-4 border-gray-400 px-3 py-2 rounded-r-lg shadow-sm">
-                  <div className="text-xs text-gray-500 mb-1">🙋 사용자 질문</div>
-                  <p className="text-sm text-gray-800">{msg.query}</p>
-                </div>
-              )}
-              {msg.answer && (
-                <div className="bg-blue-50 border-l-4 border-blue-400 px-3 py-2 rounded-r-lg shadow-sm">
-                  <div className="flex justify-between items-center text-xs text-gray-500 mb-1">
-                    <span>🤖 AI 응답</span>
-                    <span>{new Date(msg.timestamp).toLocaleTimeString('ko-KR')}</span>
+          messages.map((msg, idx) => {
+            const style = bubbleStyle[msg.event_type] || bubbleStyle.talk;
+
+            return (
+              <div key={msg.id || idx} className="space-y-1">
+                {msg.query && (
+                  <div className="bg-gray-100 border-l-4 border-gray-400 px-3 py-2 rounded-r-lg shadow-sm">
+                    <div className="text-xs text-gray-500 mb-1">🙋 사용자 질문</div>
+                    <p className="text-sm text-gray-800">{msg.query}</p>
                   </div>
-                  <p className="text-sm text-gray-800">{msg.answer}</p>
-                </div>
-              )}
-            </div>
-          ))
+                )}
+                {msg.answer && (
+                  <div className={`${style.bg} ${style.border} border-l-4 px-3 py-2 rounded-r-lg shadow-sm`}>
+                    <div className="flex justify-between items-center text-xs text-gray-500 mb-1">
+                      <span>{style.icon} {style.label}</span>
+                      <span>{new Date(msg.timestamp).toLocaleTimeString('ko-KR')}</span>
+                    </div>
+                    <p className="text-sm text-gray-800">{msg.answer}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -101,7 +120,7 @@ const ChatPanel = () => {
       {/* 하단 정보 */}
       <div className="p-2 bg-gray-50 border-t border-gray-100 text-xs text-gray-500 flex justify-between">
         <span>총 {messages.length}개</span>
-        <span>30초 자동 업데이트</span>
+        <span>30초마다 자동 업데이트</span>
       </div>
     </div>
   );
