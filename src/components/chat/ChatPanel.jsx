@@ -97,8 +97,8 @@ const ChatPanel = () => {
                 </div>
             </div>
 
-            {/* 메시지 목록 */}
-            <div className="flex-1 overflow-y-auto p-2 space-y-2 min-h-0">
+            {/* 메시지 목록 - 고정 높이 적용 */}
+            <div className="overflow-y-auto p-2 space-y-2 min-h-0 h-[400px]">
                 {messages.length === 0 && !loading ? (
                     <div className="text-center text-gray-500 text-sm py-4">
                         <svg className="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
