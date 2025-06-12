@@ -3,10 +3,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const typeColor = {
-  fall: 'bg-red-100 text-red-600',
-  alert: 'bg-yellow-100 text-yellow-600',
-  normal: 'bg-green-100 text-green-600',
-  entry: 'bg-blue-100 text-blue-600',
+  fall_alert: 'bg-red-100 text-red-600',
+  talk: 'bg-blue-100 text-blue-600',
+  routine: 'bg-green-100 text-green-600',
 };
 
 const EventLog = () => {
@@ -25,6 +24,23 @@ const EventLog = () => {
 
     fetchLogs();
   }, []);
+
+  const renderMessage = (msgStr) => {
+    try {
+      const parsed = JSON.parse(msgStr);
+      if (parsed.query && parsed.answer) {
+        return (
+          <div className="space-y-1">
+            <p><span className="font-medium text-gray-600">Q:</span> {parsed.query}</p>
+            <p><span className="font-medium text-gray-600">A:</span> {parsed.answer}</p>
+          </div>
+        );
+      }
+    } catch (_) {
+      // 파싱 실패 → 일반 문자열 출력
+    }
+    return <p>{msgStr}</p>;
+  };
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -45,13 +61,13 @@ const EventLog = () => {
             <tr>
               <th className="px-6 py-3 text-left">시간</th>
               <th className="px-6 py-3 text-left">유형</th>
-              <th className="px-6 py-3 text-left">상태</th>
+              <th className="px-6 py-3 text-left">내용</th>
             </tr>
           </thead>
           <tbody>
             {logs.length === 0 ? (
               <tr>
-                <td colSpan={4} className="text-center py-6 text-gray-400">
+                <td colSpan={3} className="text-center py-6 text-gray-400">
                   이벤트 로그가 없습니다.
                 </td>
               </tr>
@@ -70,7 +86,9 @@ const EventLog = () => {
                       {log.event_type}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-700">{log.status}</td>
+                  <td className="px-6 py-4 text-sm text-gray-700">
+                    {renderMessage(log.message)}
+                  </td>
                 </tr>
               ))
             )}
