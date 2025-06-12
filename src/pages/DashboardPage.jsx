@@ -24,7 +24,7 @@ function DashboardPage() {
                     {/* 사이드바 - flexbox로 변경 */}
                     <div className="col-span-3 flex flex-col gap-4 h-full">
                         {/* 1. 채팅 패널 - 가장 큰 영역 */}
-                        <div className="flex-[2] min-h-0 overflow-hidden">
+                        <div className="flex-[2] min-h-0 overflow-hidden max-h-96">
                             <ChatPanel />
                         </div>
 
