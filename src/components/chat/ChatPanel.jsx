@@ -68,13 +68,15 @@ const ChatPanel = () => {
     }, []);
 
     return (
-        <div className="bg-white rounded-lg shadow-md border h-full flex flex-col">
+        <div className="flex flex-col h-full rounded-lg shadow-md border bg-white">
+            {/* 상단 */}
             <div className="p-3 border-b text-sm font-bold text-gray-700 flex justify-between items-center">
                 <div>🗣️ 음성 대화 로그</div>
                 {loading && <div className="text-xs text-gray-400">로딩 중...</div>}
             </div>
 
-            <div className="overflow-y-auto px-3 py-2 flex-1 space-y-2" style={{ height: '280px' }}>
+            {/* 스크롤 영역 */}
+            <div className="overflow-y-auto flex-1 px-3 py-2 space-y-2">
                 {messages.length === 0 && !loading ? (
                     <p className="text-gray-500 text-sm text-center">대화 기록이 없습니다</p>
                 ) : (
@@ -102,6 +104,7 @@ const ChatPanel = () => {
                 <div ref={messagesEndRef} />
             </div>
 
+            {/* 하단 */}
             <div className="p-2 bg-gray-50 text-xs text-gray-500 flex justify-between">
                 <span>총 {messages.length}개</span>
                 <span>30초 간격 자동 업데이트</span>
